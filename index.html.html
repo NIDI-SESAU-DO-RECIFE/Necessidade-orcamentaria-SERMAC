@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pendências SERMAC 2026 · Geral × Orçamentária (ao vivo)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --ink:#0E2A47; --ink-2:#3A536E; --muted:#6B7F94;
+  --paper:#EEF2F6; --sheet:#FFFFFF; --line:#D5DEE7; --line-soft:#EDF1F5;
+  --geral:#0E5AA7; --ne:#1F8A70; --nr:#D9A21B; --gap:#B8325A; --dea:#6B4FA0; --dea-2:#A994CF; --exc:#8FA3B8; --adj:#C9D3DD;
+  --r:8px; color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:"Public Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--paper);color:var(--ink);font-size:15px;line-height:1.5;font-variant-numeric:tabular-nums;overflow-x:hidden}
+button,select,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid #F2B705;outline-offset:2px}
+.wrap{max-width:1360px;margin:0 auto;padding:0 24px}
+
+/* Barra superior */
+.top{background:var(--ink);color:#fff;position:sticky;top:0;z-index:20;box-shadow:0 2px 0 rgba(0,0,0,.15)}
+.top .row1,.top .row2{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px}
+.top .row1{padding-top:12px;padding-bottom:8px}
+.top .row2{padding-bottom:12px}
+.brand{display:flex;flex-direction:column;margin-right:auto;min-width:0}
+.brand b{font-size:18px;font-weight:800;letter-spacing:-.01em}
+.brand span{font-size:12.5px;color:#A9BDD2}
+.live{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;gap:7px;padding:4px 12px;border-radius:999px;background:rgba(255,255,255,.1);font-size:13px;font-weight:600}
+.pill i{width:8px;height:8px;border-radius:50%;background:#9FB3C8;flex:none}
+.pill.ok i{background:#4ADE9A;box-shadow:0 0 0 3px rgba(74,222,154,.22)}
+.pill.wait i{background:#F2B705;animation:pulse 1.2s ease-in-out infinite}
+.pill.warn i{background:#F2B705}
+.pill.err i{background:#FF6B6B}
+@keyframes pulse{50%{opacity:.3}}
+.tbtn{background:transparent;border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:999px;padding:4px 12px;cursor:pointer;text-decoration:none;font-size:13px;font-weight:600}
+.tbtn:hover{background:rgba(255,255,255,.12)}
+.tbtn:disabled{opacity:.45;cursor:default}
+.edited{font-size:12px;color:#A9BDD2;margin-left:auto}
+.seg{display:flex;background:rgba(255,255,255,.08);border-radius:999px;padding:3px;max-width:100%;overflow-x:auto;scrollbar-width:none}
+.seg::-webkit-scrollbar{display:none}
+.seg button{flex:none;border:0;background:transparent;color:#C9D7E6;padding:6px 14px;border-radius:999px;cursor:pointer;font-weight:600;font-size:13.5px}
+.seg button[aria-pressed="true"]{background:#fff;color:var(--ink)}
+.ctl{display:flex;align-items:center;gap:8px;font-size:13px;color:#C9D7E6}
+.ctl select{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:6px;padding:5px 8px}
+.ctl select option{color:var(--ink);background:#fff}
+.sw{display:flex;align-items:center;gap:8px;font-size:13px;color:#C9D7E6;cursor:pointer;user-select:none}
+.sw input{appearance:none;width:34px;height:20px;border-radius:999px;background:rgba(255,255,255,.2);position:relative;cursor:pointer;transition:background .15s;margin:0}
+.sw input::after{content:"";position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:#fff;transition:transform .15s}
+.sw input:checked{background:#F2B705}
+.sw input:checked::after{transform:translateX(14px)}
+@media (max-width:1000px){.top{position:static}.edited{margin-left:0;width:100%}}
+
+/* Aviso de conexão */
+.conn{margin:18px auto 0;max-width:1312px;border-radius:var(--r);padding:12px 16px;font-size:14px;background:#FBF0F3;border-left:4px solid var(--gap)}
+.conn.warn{background:#FBF7EC;border-left-color:var(--nr)}
+.conn[hidden]{display:none}
+
+/* Hero */
+.hero{background:var(--sheet);border-bottom:1px solid var(--line)}
+.hero .wrap{display:grid;grid-template-columns:minmax(320px,1fr) 1.45fr;gap:36px;padding-top:32px;padding-bottom:28px}
+.eyebrow{font-size:13px;color:var(--muted);margin:0 0 8px}
+.hero h1{font-size:clamp(24px,2.4vw,34px);line-height:1.14;font-weight:800;letter-spacing:-.02em;margin:0 0 14px}
+.hero h1 .n-geral{color:var(--geral)}
+.hero h1 .n-gap{color:var(--gap)}
+.hero p{margin:0 0 12px;color:var(--ink-2);max-width:60ch}
+.skeleton{display:inline-block;height:.9em;width:8ch;border-radius:4px;background:linear-gradient(90deg,#E3EAF1,#F3F6F9,#E3EAF1);background-size:200% 100%;animation:sh 1.4s linear infinite;vertical-align:-2px}
+@keyframes sh{to{background-position:-200% 0}}
+.ratio{margin-top:20px}
+.ratio-bar{display:flex;height:16px;border-radius:4px;overflow:hidden;background:var(--line)}
+.ratio-bar i{display:block;height:100%;transition:width .35s ease}
+.ratio-legend{display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:8px;font-size:12.5px;color:var(--ink-2)}
+.dot{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:22px}
+.stat{border-top:1px solid var(--line);padding-top:10px}
+.stat small{display:block;font-size:12px;color:var(--muted);line-height:1.3}
+.stat strong{display:block;font-size:20px;font-weight:800;letter-spacing:-.01em;white-space:nowrap}
+.hero .wrap > *,.ledgers > *,.grid2 > *,.answer > *{min-width:0}
+.bridge-box{position:relative;height:360px}
+.chart-title{font-weight:700;font-size:15px;margin:0 0 2px}
+.chart-sub{font-size:13px;color:var(--muted);margin:0 0 12px}
+
+/* Ledger duplo */
+.ledgers{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin:28px 0}
+.ledger{background:var(--sheet);border-radius:var(--r);border-top:5px solid var(--geral);padding:20px 22px 14px}
+.ledger.orc{border-top-color:var(--gap)}
+.ledger h2{font-size:18px;margin:0;font-weight:800}
+.ledger .def{font-size:13px;color:var(--muted);margin:2px 0 14px}
+.ledger dl{margin:0}
+.ledger .row{display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:12px;padding:9px 0;border-bottom:1px dashed var(--line)}
+.ledger dt{font-size:14px;color:var(--ink-2)}
+.ledger dt small{display:block;font-size:12px;color:var(--muted)}
+.ledger dd{margin:0;font-weight:600;font-size:16px;text-align:right;white-space:nowrap}
+.ledger .op{color:var(--muted);font-weight:500;margin-right:4px}
+.ledger .total{border-bottom:0;border-top:2px solid var(--ink);margin-top:4px;padding-top:12px}
+.ledger .total dt{font-weight:700;color:var(--ink);font-size:15px}
+.ledger .total dd{font-size:26px;font-weight:800;letter-spacing:-.01em}
+.ledger.geral .total dd{color:var(--geral)}
+.ledger.orc .total dd{color:var(--gap)}
+.ledger .note{font-size:12.5px;color:var(--muted);margin:10px 0 0}
+.neg{color:var(--gap)}
+
+/* Painéis */
+.grid2{display:grid;grid-template-columns:1.35fr 1fr;gap:24px;margin-bottom:24px}
+.panel{background:var(--sheet);border-radius:var(--r);padding:20px 22px}
+.panel.full{margin-bottom:24px}
+.chart-h{position:relative;height:300px}
+.panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.panel-head > div:first-child{flex:1 1 420px;min-width:0}
+.panel-head .chart-sub{max-width:80ch}
+.btn{border:1px solid var(--line);background:#fff;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:13px;font-weight:600;color:var(--ink)}
+.btn:hover{border-color:var(--ink-2)}
+.btn:disabled{opacity:.5;cursor:default}
+.empty-chart{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font-size:13.5px;text-align:center;padding:20px}
+
+/* Resposta */
+.answer{display:grid;grid-template-columns:1fr 1fr;background:var(--sheet);border-radius:var(--r);overflow:hidden;margin-bottom:24px}
+.answer > div{padding:20px 22px}
+.answer > div + div{border-left:1px solid var(--line)}
+.answer h3{margin:0 0 6px;font-size:16px}
+.answer p{margin:0 0 8px;font-size:14px;color:var(--ink-2);max-width:62ch}
+.formula{font-size:13px;background:var(--paper);border-radius:4px;padding:8px 10px;margin-top:6px;color:var(--ink)}
+.answer .q{grid-column:1/-1;background:var(--ink);color:#fff;border-left:0}
+.answer .q p{color:#C9D7E6;margin:0;max-width:none}
+.answer .q b{color:#fff}
+
+/* Alertas de dados */
+.alerts{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px;margin-top:12px}
+.alert{border-left:4px solid var(--nr);background:#FBF7EC;padding:12px 14px;border-radius:0 6px 6px 0;font-size:13.5px}
+.alert.crit{border-left-color:var(--gap);background:#FBF0F3}
+.alert.info{border-left-color:var(--geral);background:#EDF4FB}
+.alert.ok{border-left-color:var(--ne);background:#EAF6F2}
+.alert b{display:block;font-size:14px;margin-bottom:3px}
+.alert p{margin:0;color:var(--ink-2)}
+.alert .v{font-weight:700;color:var(--ink)}
+
+/* Tabela */
+.tbl-tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.tbl-tools input[type=search]{border:1px solid var(--line);border-radius:6px;padding:6px 10px;min-width:220px}
+.tbl-tools label{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-2)}
+.tbl-wrap{overflow:auto;max-height:620px;margin-top:14px;border:1px solid var(--line);border-radius:6px}
+table{border-collapse:collapse;width:100%;font-size:12.8px;min-width:1500px}
+thead th{position:sticky;top:0;background:#E3EAF1;text-align:right;padding:8px 10px;font-weight:700;cursor:pointer;white-space:nowrap;border-bottom:1px solid var(--line);z-index:2}
+thead th.l{text-align:left}
+thead th[aria-sort="ascending"]::after{content:" ▲";font-size:10px}
+thead th[aria-sort="descending"]::after{content:" ▼";font-size:10px}
+thead tr.band th{background:#fff;cursor:default;font-size:12px;text-align:center;border-bottom:3px solid;top:0}
+thead tr#thead th{top:31px}
+tbody td{padding:7px 10px;text-align:right;border-bottom:1px solid var(--line-soft);white-space:nowrap}
+tbody td.l{text-align:left}
+tbody td.cred{white-space:normal;min-width:220px;max-width:280px}
+tbody tr:hover{background:#F5F8FB}
+tbody td.z{color:#B3C0CC}
+td.sep,th.sep{border-left:2px solid var(--line)}
+tfoot td{position:sticky;bottom:0;background:var(--ink);color:#fff;font-weight:700;padding:9px 10px;text-align:right;white-space:nowrap}
+tfoot td.l{text-align:left}
+.tag{display:inline-block;font-size:11px;font-weight:700;padding:1px 7px;border-radius:999px;background:#E3EAF1;color:var(--ink-2);white-space:nowrap}
+.flag{display:inline-block;min-width:18px;height:18px;line-height:18px;text-align:center;border-radius:50%;background:var(--nr);color:#fff;font-size:11px;font-weight:800;cursor:help}
+.flag.crit{background:var(--gap)}
+.meses{font-size:11.5px;color:var(--muted);white-space:normal;min-width:120px;max-width:180px}
+.empty-row td{text-align:center;color:var(--muted);padding:34px;white-space:normal}
+footer{font-size:12.5px;color:var(--muted);padding:10px 0 40px}
+
+@media (max-width:1000px){
+  .wrap{padding:0 16px}
+  .hero .wrap,.ledgers,.grid2,.answer{grid-template-columns:1fr}
+  .answer > div + div{border-left:0;border-top:1px solid var(--line)}
+  .conn{margin-left:16px;margin-right:16px}
+}
+@media (max-width:560px){.stats{grid-template-columns:1fr 1fr}.ledger{padding:18px 16px 12px}.ledger .total dd{font-size:clamp(16px,5vw,21px)}.ledger dd{font-size:14.5px}.seg button{padding:5px 10px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media print{.top{position:static}.tbl-wrap{max-height:none}.live{display:none}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap row1">
+    <div class="brand">
+      <b>Pendências SERMAC · 2026</b>
+      <span>Outubro a dezembro, com DEA · Secretaria de Saúde do Recife</span>
+    </div>
+    <div class="live">
+      <span class="pill wait" id="st-pill" role="status" aria-live="polite"><i></i><span id="st-text">Conectando ao Google Drive…</span></span>
+      <button class="tbtn" id="btn-refresh" type="button" disabled>Atualizar agora</button>
+      <a class="tbtn" id="btn-sheet" target="_blank" rel="noopener">Abrir planilha</a>
+    </div>
+  </div>
+  <div class="wrap row2">
+    <div class="seg" role="group" aria-label="Grupo credor" id="segGrupo"></div>
+    <label class="ctl">Fonte
+      <select id="selFonte"><option value="">Todas</option></select>
+    </label>
+    <label class="sw" title="Quando o empenho de uma linha supera a necessidade, o saldo negativo abate a necessidade de outras linhas (como faz a planilha). Desative para uma visão conservadora.">
+      <input type="checkbox" id="swComp" checked> Compensar excedente
+    </label>
+    <span class="edited" id="st-meta">Leitura automática a cada 5 minutos</span>
+  </div>
+</header>
+
+<div class="conn" id="conn" hidden></div>
+
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <p class="eyebrow" id="heroEyebrow">Posição da planilha SERMAC</p>
+      <h1 id="heroTitle"><span class="skeleton"></span> pendentes, <span class="skeleton"></span> sem orçamento garantido.</h1>
+      <p id="heroText">Lendo a planilha…</p>
+      <div class="ratio">
+        <div class="ratio-bar" id="ratioBar"></div>
+        <div class="ratio-legend" id="ratioLegend"></div>
+      </div>
+      <div class="stats" id="heroStats"></div>
+    </div>
+    <div>
+      <p class="chart-title">Da pendência geral à necessidade orçamentária</p>
+      <p class="chart-sub">Cada degrau retira o que já tem cobertura (empenho ou reserva). O que sobra ainda precisa de orçamento até dezembro.</p>
+      <div class="bridge-box"><canvas id="chBridge" aria-label="Gráfico em cascata da pendência geral até a necessidade orçamentária" role="img"></canvas></div>
+    </div>
+  </div>
+</section>
+
+<main class="wrap">
+
+  <div class="ledgers">
+    <section class="ledger geral" aria-labelledby="lg1">
+      <h2 id="lg1">Pendência geral</h2>
+      <p class="def">Tudo o que ainda precisa ser pago, com ou sem cobertura orçamentária.</p>
+      <dl id="ledGeral"></dl>
+    </section>
+    <section class="ledger orc" aria-labelledby="lg2">
+      <h2 id="lg2">Pendência orçamentária</h2>
+      <p class="def">A parte da pendência que ainda não está em reserva (NR) nem em empenho (NE).</p>
+      <dl id="ledOrc"></dl>
+    </section>
+  </div>
+
+  <section class="answer" aria-label="Qual valor apresentar">
+    <div class="q">
+      <p><b>Geral ou só orçamentário?</b> Os dois números respondem perguntas diferentes e não devem ser somados nem trocados. O painel anterior do Power BI mostrava a soma geral com o rótulo “Valor sem reserva/empenho”, o que explica o questionamento.</p>
+    </div>
+    <div>
+      <h3>Use a pendência geral para falar de pagamento</h3>
+      <p>Mostra o compromisso financeiro total com cada credor até dezembro, incluindo o que já está empenhado e só aguarda liquidação e pagamento.</p>
+      <div class="formula">OUT/26 (com atrasados) + NOV/26 + DEZ/26 + DEA não pago</div>
+    </div>
+    <div>
+      <h3>Use a pendência orçamentária para pedir suplementação</h3>
+      <p>Mostra quanto ainda falta reservar ou empenhar. É o valor que deve estar no card “Valor sem reserva/empenho” e na coluna “Valor até fim do ano”.</p>
+      <div class="formula">(OUT + NOV + DEZ − NR − NE) + DEA sem NR</div>
+    </div>
+  </section>
+
+  <div class="grid2">
+    <section class="panel">
+      <p class="chart-title">Geral × orçamentária por grupo credor</p>
+      <p class="chart-sub">Respeita o filtro de fonte; todos os grupos ficam visíveis para comparação, com o selecionado em destaque.</p>
+      <div class="chart-h"><canvas id="chGrupo" role="img" aria-label="Comparação por grupo credor"></canvas></div>
+    </section>
+    <section class="panel">
+      <p class="chart-title">Necessidade orçamentária por fonte</p>
+      <p class="chart-sub">Fontes com saldo líquido negativo aparecem na legenda, mas não entram no anel.</p>
+      <div class="chart-h"><canvas id="chFonte" role="img" aria-label="Necessidade orçamentária por fonte"></canvas></div>
+    </section>
+  </div>
+
+  <section class="panel full">
+    <div class="panel-head">
+      <div>
+        <p class="chart-title">Cobertura da pendência por credor</p>
+        <p class="chart-sub">À direita do zero, a pendência geral separada pelo que já tem cobertura. Em cinza, à esquerda, o empenho que supera a necessidade em alguma linha do credor.</p>
+      </div>
+      <button class="btn" id="btnTop" type="button">Mostrar todos os credores</button>
+    </div>
+    <div class="chart-h" id="credBox" style="height:520px"><canvas id="chCred" role="img" aria-label="Cobertura por credor"></canvas></div>
+  </section>
+
+  <div class="grid2">
+    <section class="panel">
+      <p class="chart-title">Perfil mensal da pendência</p>
+      <p class="chart-sub">Na planilha, os atrasados até setembro já estão dentro do OUT/26; aqui aparecem separados da competência de outubro.</p>
+      <div class="chart-h" id="mesBox"><canvas id="chMes" role="img" aria-label="Pendência por mês"></canvas></div>
+    </section>
+    <section class="panel">
+      <p class="chart-title">DEA não pago</p>
+      <p class="chart-sub">Despesas de exercícios anteriores por credor, separadas entre já reservadas e sem reserva.</p>
+      <div class="chart-h" id="deaBox"><canvas id="chDea" role="img" aria-label="DEA por credor"></canvas></div>
+    </section>
+  </div>
+
+  <section class="panel full">
+    <p class="chart-title">Pontos para conferir na planilha</p>
+    <p class="chart-sub">Verificados automaticamente a cada leitura, sobre a aba inteira (sem filtros).</p>
+    <div class="alerts" id="alerts"></div>
+  </section>
+
+  <section class="panel full">
+    <div class="panel-head">
+      <div>
+        <p class="chart-title">Detalhamento por contrato e fonte</p>
+        <p class="chart-sub" id="tblCount"></p>
+      </div>
+      <div class="tbl-tools">
+        <input type="search" id="q" placeholder="Buscar credor, contrato ou mês" aria-label="Buscar credor, contrato ou mês">
+        <label><input type="checkbox" id="hideZero" checked> Ocultar linhas zeradas</label>
+        <button class="btn" id="btnCsv" type="button">Baixar CSV</button>
+      </div>
+    </div>
+    <div class="tbl-wrap">
+      <table id="tbl">
+        <thead>
+          <tr class="band">
+            <th colspan="6" style="border-bottom-color:var(--line)"></th>
+            <th colspan="5" class="sep" style="border-bottom-color:var(--geral);color:var(--geral)">Pendência geral</th>
+            <th colspan="5" class="sep" style="border-bottom-color:var(--gap);color:var(--gap)">Pendência orçamentária</th>
+          </tr>
+          <tr id="thead"></tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+        <tfoot><tr id="tfoot"></tr></tfoot>
+      </table>
+    </div>
+  </section>
+
+  <footer id="foot">Fonte: planilha “Valores pendentes – Executivas SESAU”, aba SERMAC, lida pelo Google Drive de quem abre o painel. NR = nota de reserva · NE = nota de empenho · DEA = despesa de exercícios anteriores.</footer>
+</main>
+
+<script>
+/* ===================== CONFIGURAÇÃO ===================== */
+const SERVER = "Google Drive";
+const FILE_ID = "10fFZtFmlBe9uuszKA1rWT5NTekUgvVGkXU1sq11_qNA";
+const EXECUTIVA = "SERMAC";
+const REFRESH_MS = 5 * 60 * 1000;
+// Para hospedar fora do claude.ai (link público): cole aqui o link CSV gerado em
+// Arquivo › Compartilhar › Publicar na Web › aba SERMAC › Valores separados por vírgula (.csv)
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQumISNcDqDqgm1UJZvsAdLUcTdJ-dcR0RI1my1_ppu8p8B2Y10KrFc6oYrNdKFg-mAVPSCeai-yZXK/pub?gid=1335435190&single=true&output=csv";
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/" + FILE_ID + "/edit#gid=1335435190";
+
+// Mesma regra do "Grupo Credor" do Power BI. Credores novos que não estiverem aqui aparecem como "Outros".
+const GRUPOS = {
+  SAMU: ["MERCURIO SAUDE PRODUTOS HOSPITALARES LTDA","SUPPORTCARE TECNOLOGIA HOSPITALAR LTDA","MG COMERCIO E SERVICOS DE INFORMATICA LTDA","RADIUM TELECOMUNICAÇÕES LTDA","MARIA BERENICE RIBEIRO COUTINHO PAULO NETO","SIMONE NOVELLINO DE ALBUQUERQUE AZEVEDO","SISGRAPH LTDA","VISION NET LTDA","CLARO S/A"],
+  OSS: ["HECPI","NDI - ANA","HCR","HMR","UPAE ARRUDA","UPAE IBURA","UPAE MUSTARDINA"],
+  LABORATORIOS: ["QUIBASA QUÍMICA BÁSICA LTDA.","DIASORIN LTDA.","DIASORIN LTDA - PRORROGAÇÃO","DIAGNOCEL COMÉRCIO E REPRESENTAÇÕES LTDA.","DIAGNOCEL COMÉRCIO E REPRESENTAÇÕES LTDA - PRORROGAÇÃO","BECKMAN COULTER DO BRASIL","BECKMAN COULTER DO BRASIL - PRORROGAÇÃO","BIO RAD LABORATORIOS BRASIL LTDA.","BIO RAD LABORATORIOS BRASIL LTDA - PRORROGAÇÃO","NORDE-LAB COMÉRCIO E REPRESENTAÇÕES LTDA.","VITALLIS DIAGNÓSTICA LTDA.","VITALLIS DIAGNÓSTICA LTDA - PRORROGAÇÃO","VYTTRA DIAGNÓSTICOS S.A.","VYTTRA DIAGNÓSTICOS S.A. - PRORROGAÇÃO","VISION MEDICA LTDA.","VISION MEDICA LTDA - PRORROGAÇÃO","LABTEST DIAGNOSTICA SA","REVANIL","RG DISTRIBUIDORA DE ALIMENTOS LTDA","QUALITI COMERCIO E SERVICOS LTDA","DIFERENCIAL COMERCIO ATACADISTA DE PRODUTOS ALIMENTICIOS LTDA","MTB CIENTIFICA EQUIPAMENTOS PARA LABORATÓRIOS LTDA","SERTIN COMÉRCIO E SERVIÇOS TÉCNICOS DE INSTRUMENTAÇÃO LTDA","UNIQUE HOSPITALAR LTDA.","REVANIL COMÉRCIO DE PRODUTOS CIRURGICOS LTDA","MEDICAL MERCANTIL DE APARELHAGEM MEDICA LTDA","VISION","HALOGENN PRODUTOS CIENTÍFICOS","KASVI","IDEXX","VITALLIS DIAGNÓSTICA LTDA. (24H)","BIOSYS LTDA. (24H)","VYTTRA DIAGNÓSTICOS S.A. (24H)"],
+  GGAI: ["FUNDAÇÃO DE APOIO AO DESENVOLVIMENTO DA UFPE - FADE","FRANCISCO ASSIS FERREIRA DA SILVA e a Sra. JACIONE MARIA DOS SANTOS OLIVEIRA,","PASCHOAL IMOBILIARIA LTDA","Sr. ARNALDO DE SENA CARNEIRO"]
+};
+const GRUPO_ORDEM = ["OSS","SAMU","LABORATORIOS","GGAI","Outros"];
+
+const norm = s => String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase().replace(/[.,]/g,"").replace(/\s+/g," ").trim();
+const GRUPO_IDX = [];
+for (const g of ["SAMU","OSS","LABORATORIOS","GGAI"]) for (const c of GRUPOS[g]) GRUPO_IDX.push([norm(c), g]);
+function grupoDe(credor){
+  const n = norm(credor);
+  const exato = GRUPO_IDX.find(([k])=>k===n);
+  if (exato) return exato[1];
+  // variações do mesmo credor (ex.: "DIASORIN LTDA - PRORROGAÇÃO"): maior prefixo que casa
+  let best=null;
+  for (const [k,g] of GRUPO_IDX) if (n.startsWith(k+" ") && (!best || k.length>best[0].length)) best=[k,g];
+  return best ? best[1] : "Outros";
+}
+
+function money(v){
+  let s = String(v??"").replace(/\\/g,"").trim();
+  if (!s || /^#/.test(s)) return 0;
+  const neg = /^\(.*\)$/.test(s) || s.includes("-");
+  s = s.replace(/[^\d,.]/g,"");
+  if (s.includes(",")) s = s.replace(/\./g,"").replace(",",".");
+  else if (!/^\d+\.\d{1,2}$/.test(s)) s = s.replace(/\./g,"");
+  const n = parseFloat(s);
+  return isNaN(n) ? 0 : (neg ? -n : n);
+}
+
+/* ===================== LEITURA DA PLANILHA ===================== */
+// Colunas localizadas pelo texto do cabeçalho (ordem importa: regras mais específicas primeiro).
+const HEADER_RULES = [
+  ["executiva", h=>h.startsWith("executiva")],
+  ["status",    h=>h.startsWith("status")],
+  ["meses",     h=>h.includes("selecionar os meses")],
+  ["tipo",      h=>h.startsWith("tipo do contrato")],
+  ["contrato",  h=>h==="contrato"],
+  ["credor",    h=>h==="credor"],
+  ["fonte",     h=>h==="fonte"],
+  ["atras",     h=>h.includes("atrasado")],
+  ["out",       h=>h.includes("out/26")],
+  ["nov",       h=>h.includes("nov/26")],
+  ["dez",       h=>h.includes("dez/26")],
+  ["nr",        h=>h.includes("em nr")],
+  ["ne",        h=>h.includes("em ne")],
+  ["semNrNe",   h=>h.includes("nem nr nem ne")],
+  ["deaAnos",   h=>h.includes("possui dea")],
+  ["deaAut",    h=>h.includes("dea total autorizado")],
+  ["deaNaoAut", h=>h.includes("ainda não autorizado")||h.includes("ainda nao autorizado")],
+  ["deaNaoPago",h=>h.includes("ainda não pago")||h.includes("ainda nao pago")],
+  ["necFim",    h=>h.includes("final do ano")],
+];
+const FIELDS = HEADER_RULES.map(r=>r[0]);
+const MONEY = new Set(["atras","out","nov","dez","nr","ne","semNrNe","deaAut","deaNaoAut","deaNaoPago","necFim"]);
+
+function splitRow(line){
+  // divide por "|" que não esteja escapado
+  const inner = line.trim().replace(/^\|/,"").replace(/\|$/,"");
+  return inner.split(/(?<!\\)\|/).map(c=>c.replace(/\\\|/g,"|").trim());
+}
+function mapHeader(cells){
+  const lower = cells.map(c=>String(c).replace(/\\/g,"").replace(/\s+/g," ").trim().toLowerCase());
+  if (!lower.includes("credor") || !lower.some(h=>h.startsWith("executiva"))) return null;
+  const map = {}; const used = new Set();
+  lower.forEach((h,i)=>{ for (const [k,test] of HEADER_RULES){ if(!(k in map) && test(h)){ map[k]=i; used.add(i); break; } } });
+  return map;
+}
+function markdownBlocks(text){
+  const blocks=[]; let cur=null;
+  for (const line of String(text).split("\n")){
+    if (!line.trim().startsWith("|")) { cur=null; continue; }
+    if (!cur) { cur=[]; blocks.push(cur); }
+    cur.push(splitRow(line));
+  }
+  return blocks;
+}
+function csvRows(text){
+  const rows=[]; let row=[], f="", q=false;
+  text=String(text).replace(/^\ufeff/,"");
+  for (let i=0;i<text.length;i++){
+    const c=text[i];
+    if (q){ if(c==='"'){ if(text[i+1]==='"'){f+='"';i++;} else q=false; } else f+=c; }
+    else if (c==='"') q=true;
+    else if (c===','){ row.push(f); f=""; }
+    else if (c==='\n'||c==='\r'){ if(c==='\r'&&text[i+1]==='\n') i++; row.push(f); rows.push(row); row=[]; f=""; }
+    else f+=c;
+  }
+  if (f!==""||row.length){ row.push(f); rows.push(row); }
+  return rows.map(r=>r.map(x=>x.trim()));
+}
+function parseBlocks(blocks){
+  const rows=[]; const missing=new Set();
+  for (const block of blocks){
+    let map=null;
+    for (const cells of block){
+      const hm = mapHeader(cells);
+      if (hm) { map=hm; continue; }
+      if (!map) continue;
+      if (norm(cells[map.executiva]) !== EXECUTIVA) continue;
+      const credor = (cells[map.credor]||"").replace(/\\/g,"").replace(/\s+/g," ").trim();
+      if (!credor) continue; // linhas-modelo vazias
+      const r = {};
+      for (const k of FIELDS){
+        if (!(k in map)) { missing.add(k); r[k] = MONEY.has(k)?0:""; continue; }
+        const raw = cells[map[k]] ?? "";
+        r[k] = MONEY.has(k) ? money(raw) : raw.replace(/\\/g,"").replace(/\s+/g," ").trim();
+      }
+      r.credor = credor;
+      r.fonte = r.fonte || "Sem fonte informada";
+      r.tipo = r.tipo || "Sem tipo informado";
+      r.status = r.status || "Sem status";
+      r.grupo = grupoDe(credor);
+      r.aPagar = r.out + r.nov + r.dez;
+      rows.push(r);
+    }
+  }
+  return {rows, missing:[...missing]};
+}
+const parseSheet = text => parseBlocks(markdownBlocks(text));
+const parseCsv = text => parseBlocks([csvRows(text)]);
+
+/* ===================== FORMATAÇÃO ===================== */
+const $ = s => document.querySelector(s);
+document.getElementById("btn-sheet").href = SHEET_URL;
+const r2 = v => Math.round(v*100)/100;
+const NF = new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"});
+const brl = v => NF.format(r2(v)).replace(/\u00a0/g," ");
+const brlShort = v => {
+  const a = Math.abs(v), s = v<0?"−":"";
+  if (a>=1e6) return s+"R$ "+(a/1e6).toLocaleString("pt-BR",{maximumFractionDigits:1,minimumFractionDigits:1})+" mi";
+  if (a>=1e3) return s+"R$ "+(a/1e3).toLocaleString("pt-BR",{maximumFractionDigits:0})+" mil";
+  return s+"R$ "+a.toLocaleString("pt-BR",{maximumFractionDigits:0});
+};
+const esc = s => String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const hora = t => new Date(t).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+const dataHora = t => new Date(t).toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
+const shortName = (n, max=30) => { let s = n.replace(/^S(r|ra)\. /,"").replace(/ (LTDA\.?|S\.?A\.?|S\/A|SA)( \(24H\))?/,"$2").replace(/COMÉRCIO E REPRESENTAÇÕES/,"COM. E REP.").replace(/COMERCIO ATACADISTA DE PRODUTOS ALIMENTICIOS/,"COM. ATAC. ALIM.").replace(/ PRODUTOS HOSPITALARES| TECNOLOGIA HOSPITALAR| COMERCIO E SERVICOS DE INFORMATICA/,"").replace(/ TELECOMUNICAÇÕES/," TELECOM").replace(/FUNDAÇÃO DE APOIO AO DESENVOLVIMENTO DA UFPE - /,"").replace(/ - PRORROGAÇÃO/," (prorrog.)"); s = s.replace(/ e a Sra?\..*$/,""); return s.length>max ? s.slice(0,max-1)+"…" : s; };
+
+const PAL = {geral:"#0E5AA7", ne:"#1F8A70", nr:"#D9A21B", gap:"#B8325A", dea:"#6B4FA0", dea2:"#A994CF", exc:"#8FA3B8", adj:"#C9D3DD", ink:"#0E2A47", muted:"#6B7F94"};
+const GLABEL = {OSS:"OSS", SAMU:"SAMU", LABORATORIOS:"Laboratórios", GGAI:"GGAI", Outros:"Outros"};
+const GCOLOR = {OSS:"#0E5AA7", SAMU:"#B8325A", LABORATORIOS:"#6B4FA0", GGAI:"#C4661F", Outros:"#7A8A99"};
+const GTAG = {OSS:["#DCE9F7","#0E5AA7"], SAMU:["#F7E3E9","#9A2B4C"], LABORATORIOS:["#EDE7F6","#5A3F8D"], GGAI:["#FAE9DA","#9A4E12"], Outros:["#E3EAF1","#3A536E"]};
+const FCOLORS = ["#0E5AA7","#1F8A70","#C4661F","#6B4FA0","#B8325A","#4F86C6"];
+
+/* ===================== ESTADO ===================== */
+let DATA = [];
+let loaded = false;
+const state = {grupo:"", fonte:"", comp:true, top:true, q:"", hideZero:true, sortKey:"nec", sortDir:-1};
+
+const credorBase = n => n.replace(/\s*-\s*PRORROGA[ÇC][ÃA]O\s*$/i,"").replace(/\.\s*$/,"").trim();
+function calc(d){
+  const tot = r2(d.out + d.nov + d.dez);
+  const gap = d.semNrNe;                         // coluna calculada da planilha
+  const gapPos = Math.max(gap,0), exc = Math.min(gap,0);
+  const covNE = Math.min(Math.max(d.ne,0), Math.max(tot,0));
+  const covNR = Math.min(Math.max(d.nr,0), Math.max(tot-covNE,0));
+  const necCons = r2(gapPos + d.deaNaoAut);
+  return {...d, base:credorBase(d.credor), tot, gap, gapPos, exc, covNE, covNR,
+    atrIn: Math.max(Math.min(d.atras, d.out),0),
+    outComp: Math.max(r2(d.out - d.atras),0),
+    geral: r2(tot + d.deaNaoPago),
+    gapUse: state.comp ? gap : gapPos,
+    nec: state.comp ? d.necFim : necCons,
+    zero: tot===0 && d.deaNaoPago===0 && d.ne===0 && d.nr===0 && d.atras===0 && d.necFim===0};
+}
+function base(opts={}){
+  return DATA.map(calc).filter(d =>
+    (opts.ignoreGroup || !state.grupo || d.grupo===state.grupo) &&
+    (!state.fonte || d.fonte===state.fonte));
+}
+function sum(rows,k){ return r2(rows.reduce((a,d)=>a+(d[k]||0),0)); }
+const AGG_KEYS = ["covNE","covNR","atras","atrIn","outComp","out","nov","dez","tot","ne","nr","gap","gapPos","exc","gapUse","deaAut","deaNaoAut","deaNaoPago","geral","nec","necFim"];
+function agg(rows){ const o={}; AGG_KEYS.forEach(k=>o[k]=sum(rows,k)); return o; }
+const groupsPresent = () => GRUPO_ORDEM.filter(g=>DATA.some(d=>d.grupo===g));
+
+/* ===================== QUALIDADE DOS DADOS ===================== */
+const outFecha = d => !(d.atras>0 && d.nov>0 && Math.abs(r2(d.out - d.atras - d.nov))>0.01);
+function rowFlags(d){
+  const f=[];
+  const calcGap = r2(d.out+d.nov+d.dez-d.nr-d.ne);
+  if (Math.abs(d.semNrNe-calcGap)>0.05) f.push({c:true,t:`Planilha informa ${brl(d.semNrNe)} sem NR/NE; a fórmula dá ${brl(calcGap)}.`});
+  const calcNec = r2(d.semNrNe + d.deaNaoAut);
+  if (Math.abs(d.necFim-calcNec)>0.05) f.push({c:true,t:`Necessidade na planilha é ${brl(d.necFim)}; sem NR/NE + DEA sem NR dá ${brl(calcNec)}.`});
+  if (!outFecha(d)) f.push({c:false,t:`OUT/26 (${brl(d.out)}) não fecha com atrasado (${brl(d.atras)}) + competência de NOV (${brl(d.nov)}).`});
+  if (d.semNrNe<-0.05) f.push({c:false,t:`Empenho supera a necessidade em ${brl(-d.semNrNe)}.`});
+  if (d.fonte==="Sem fonte informada") f.push({c:false,t:"Fonte não informada."});
+  if (!/conclu/i.test(d.status)) f.push({c:false,t:`Preenchimento: ${d.status}.`});
+  if (/20(0|1)\d|202[0-5]/.test(d.meses)) f.push({c:false,t:"Meses de outros anos informados na coluna de meses de 2026."});
+  if (d.deaNaoPago>0 && !d.deaAnos) f.push({c:false,t:"DEA informado sem o ano de origem."});
+  if (d.grupo==="Outros") f.push({c:false,t:"Credor sem grupo definido na regra."});
+  return f;
+}
+
+/* ===================== GRÁFICOS ===================== */
+const hasChart = typeof Chart !== "undefined";
+if (hasChart){
+  Chart.defaults.font.family = '"Public Sans", system-ui, sans-serif';
+  Chart.defaults.font.size = 12;
+  Chart.defaults.color = PAL.muted;
+  Chart.defaults.plugins.legend.labels.boxWidth = 10;
+  Chart.defaults.plugins.legend.labels.boxHeight = 10;
+  Chart.defaults.plugins.tooltip.backgroundColor = PAL.ink;
+  Chart.defaults.plugins.tooltip.padding = 10;
+  Chart.defaults.animation.duration = 350;
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) Chart.defaults.animation = false;
+}
+const charts = {};
+function mk(id, cfg){
+  if (!hasChart) return;
+  const cv = document.getElementById(id);
+  cv.parentElement.querySelector(".empty-chart")?.remove();
+  if (charts[id]) { charts[id].destroy(); delete charts[id]; }
+  if (!cfg) return;
+  charts[id] = new Chart(cv, cfg);
+}
+function emptyChart(id, msg){
+  mk(id, null);
+  const box = document.getElementById(id).parentElement;
+  const d = document.createElement("div"); d.className="empty-chart"; d.textContent=msg; box.appendChild(d);
+}
+const moneyTick = v => brlShort(v);
+const gridC = {color:"#EDF1F5"};
+const barLabels = {
+  id:"barLabels",
+  afterDatasetsDraw(chart, _a, opts){
+    if(!opts || !opts.labels) return;
+    const {ctx} = chart; ctx.save();
+    ctx.font = '600 12px "Public Sans", sans-serif'; ctx.fillStyle = PAL.ink; ctx.textAlign="center";
+    chart.getDatasetMeta(0).data.forEach((el,i)=>{
+      const t = opts.labels[i]; if(!t) return;
+      ctx.fillText(t, el.x, Math.min(el.y, el.base)-6);
+    });
+    ctx.restore();
+  }
+};
+
+/* ===================== FILTROS ===================== */
+function buildControls(){
+  const gs = groupsPresent();
+  if (state.grupo && !gs.includes(state.grupo)) state.grupo = "";
+  $("#segGrupo").innerHTML = [["","Todos"],...gs.map(g=>[g,GLABEL[g]])]
+    .map(([k,l])=>`<button type="button" data-g="${k}" aria-pressed="${state.grupo===k}">${l}</button>`).join("");
+  const fs = [...new Set(DATA.map(d=>d.fonte))].sort((a,b)=>a.localeCompare(b,"pt-BR"));
+  if (state.fonte && !fs.includes(state.fonte)) state.fonte = "";
+  $("#selFonte").innerHTML = `<option value="">Todas</option>`+fs.map(f=>`<option value="${esc(f)}">${esc(f)}</option>`).join("");
+  $("#selFonte").value = state.fonte;
+}
+$("#segGrupo").addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b) return;
+  state.grupo=b.dataset.g;
+  $("#segGrupo").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed", x===b));
+  render();
+});
+$("#selFonte").addEventListener("change",e=>{state.fonte=e.target.value; render();});
+$("#swComp").addEventListener("change",e=>{state.comp=e.target.checked; render();});
+$("#btnTop").addEventListener("click",()=>{state.top=!state.top; render();});
+$("#q").addEventListener("input",e=>{state.q=e.target.value; renderTable(base());});
+$("#hideZero").addEventListener("change",e=>{state.hideZero=e.target.checked; renderTable(base());});
+
+/* ===================== RENDER ===================== */
+function renderLoading(){
+  $("#heroTitle").innerHTML = `<span class="skeleton"></span> pendentes, <span class="skeleton"></span> sem orçamento garantido.`;
+  $("#heroText").textContent = DATA.length ? "" : "Os números aparecem assim que a planilha for lida.";
+  $("#ratioBar").innerHTML = ""; $("#ratioLegend").innerHTML = ""; $("#heroStats").innerHTML = "";
+  const dash = l => `<div class="row"><dt>${l}</dt><dd>—</dd></div>`;
+  $("#ledGeral").innerHTML = ["A pagar em OUT/26","A pagar em NOV/26","A pagar em DEZ/26","DEA ainda não pago"].map(dash).join("")+`<div class="row total"><dt>Pendência geral</dt><dd>—</dd></div>`;
+  $("#ledOrc").innerHTML = ["Pendência OUT a DEZ","Já empenhado (NE)","Já reservado (NR)","DEA sem reserva"].map(dash).join("")+`<div class="row total"><dt>Necessidade orçamentária até dezembro</dt><dd>—</dd></div>`;
+  ["chBridge","chGrupo","chFonte","chCred","chMes","chDea"].forEach(id=>emptyChart(id,"Aguardando a leitura da planilha"));
+  $("#btnTop").disabled = true;
+  $("#alerts").innerHTML = "";
+  $("#thead").innerHTML = ""; $("#tfoot").innerHTML = "";
+  $("#tbody").innerHTML = `<tr class="empty-row"><td>Aguardando a leitura da aba SERMAC.</td></tr>`;
+  $("#tblCount").textContent = "";
+}
+
+function render(){
+  if (!loaded) return renderLoading();
+  const rows = base();
+  const A = agg(rows);
+  const gLabel = state.grupo ? (state.grupo==="OSS"?"nas OSS":state.grupo==="SAMU"?"no SAMU":state.grupo==="LABORATORIOS"?"nos laboratórios":state.grupo==="GGAI"?"na GGAI":"em outros credores")
+                             : `nos ${groupsPresent().length} grupos`;
+  const fLabel = state.fonte ? ` · fonte ${state.fonte}` : "";
+
+  /* hero */
+  const pct = A.geral>0 ? Math.max(A.nec,0)/A.geral*100 : 0;
+  $("#heroEyebrow").textContent = `Posição da planilha SERMAC${lastOkAt?` · lida às ${hora(lastOkAt)}`:""}${fLabel}`;
+  $("#heroTitle").innerHTML = `De <span class="n-geral">${brlShort(A.geral)}</span> pendentes ${gLabel}, <span class="n-gap">${brlShort(A.nec)}</span> ainda não têm orçamento garantido.`;
+  $("#heroText").innerHTML =
+    `${brlShort(A.covNE + A.covNR + A.deaAut)} já estão empenhados ou reservados e só dependem de pagamento. `+
+    `A necessidade orçamentária representa <b>${pct.toLocaleString("pt-BR",{maximumFractionDigits:0})}%</b> da pendência geral`+
+    (A.exc<0 ? (state.comp ? `, já descontados ${brlShort(-A.exc)} de empenho acima do necessário em algumas linhas.` : `; ${brlShort(-A.exc)} de empenho acima do necessário não foram descontados.`) : ".");
+  const covered = A.covNE + A.covNR + A.deaAut;
+  const parts = [["Empenhado ou reservado",covered,PAL.ne],["Sem cobertura (OUT–DEZ)",A.gapPos,PAL.gap],["DEA sem reserva",A.deaNaoAut,PAL.dea]];
+  const T = parts.reduce((a,p)=>a+p[1],0)||1;
+  $("#ratioBar").innerHTML = parts.map(p=>`<i style="width:${p[1]/T*100}%;background:${p[2]}" title="${p[0]}: ${brl(p[1])}"></i>`).join("");
+  $("#ratioLegend").innerHTML = parts.map(p=>`<span><span class="dot" style="background:${p[2]}"></span>${p[0]} · ${brlShort(p[1])} (${(p[1]/T*100).toLocaleString("pt-BR",{maximumFractionDigits:0})}%)</span>`).join("");
+  const nCred = new Set(rows.map(d=>d.base)).size, nCont = new Set(rows.map(d=>d.contrato)).size;
+  $("#heroStats").innerHTML =
+    `<div class="stat"><small>Atrasados até set/26</small><strong>${brlShort(A.atras)}</strong></div>`+
+    `<div class="stat"><small>Credores · contratos</small><strong>${nCred} · ${nCont}</strong></div>`+
+    `<div class="stat"><small>Linhas com ponto de atenção</small><strong>${rows.filter(d=>rowFlags(d).length).length} de ${rows.length}</strong></div>`;
+
+  /* ledgers */
+  const line = (lbl,sub,v,op="",cls="") => `<div class="row ${cls}"><dt>${lbl}${sub?`<small>${sub}</small>`:""}</dt><dd>${op?`<span class="op">${op}</span>`:""}<span class="${v<0?"neg":""}">${brl(v)}</span></dd></div>`;
+  $("#ledGeral").innerHTML =
+    line("A pagar em OUT/26", A.atras>0?`inclui ${brl(A.atrIn)} de atrasados até setembro`:"competência de outubro", A.out) +
+    line("A pagar em NOV/26","",A.nov,"+") +
+    line("A pagar em DEZ/26","",A.dez,"+") +
+    line("DEA ainda não pago", `${brl(A.deaAut)} com NR · ${brl(A.deaNaoAut)} sem NR`, A.deaNaoPago,"+") +
+    line("Pendência geral","",A.geral,"=","total");
+  const adj = r2(A.nec - (state.comp ? r2(A.gapUse + A.deaNaoAut) : r2(A.gapPos + A.deaNaoAut)));
+  $("#ledOrc").innerHTML =
+    line("Pendência OUT a DEZ","",A.tot) +
+    line("Já empenhado (NE)","aguarda liquidação e pagamento",A.ne,"−") +
+    line("Já reservado (NR)","",A.nr,"−") +
+    (!state.comp && A.exc<0 ? line("Empenho excedente não compensado","linhas em que o NE supera o necessário",-A.exc,"+") : "") +
+    line("Sem reserva nem empenho","",A.gapUse,"=") +
+    line("DEA sem reserva","",A.deaNaoAut,"+") +
+    (Math.abs(adj)>0.05 ? line("Ajuste da planilha","linhas em que a necessidade informada difere da fórmula",adj,adj<0?"−":"+") : "") +
+    line("Necessidade orçamentária até dezembro","",A.nec,"=","total");
+
+  /* cascata */
+  const steps = []; let run = A.geral;
+  steps.push({l:["Pendência","geral"], a:0, b:run, c:PAL.geral, v:run});
+  if (A.ne){ steps.push({l:["Empenhado","(NE)"], a:run-A.ne, b:run, c:PAL.ne, v:-A.ne}); run -= A.ne; }
+  if (A.nr){ steps.push({l:["Reservado","(NR)"], a:run-A.nr, b:run, c:PAL.nr, v:-A.nr}); run -= A.nr; }
+  if (A.deaAut>0){ steps.push({l:["DEA já","reservado"], a:run-A.deaAut, b:run, c:PAL.dea2, v:-A.deaAut}); run -= A.deaAut; }
+  if (!state.comp && A.exc<0){ steps.push({l:["Excedente","não compensado"], a:run, b:run-A.exc, c:PAL.exc, v:-A.exc}); run -= A.exc; }
+  const diff = r2(A.nec - run);
+  if (Math.abs(diff)>0.05){ steps.push({l:["Ajuste da","planilha"], a:Math.min(run,run+diff), b:Math.max(run,run+diff), c:PAL.adj, v:diff}); }
+  steps.push({l:["Necessidade","orçamentária"], a:0, b:A.nec, c:PAL.gap, v:A.nec});
+  mk("chBridge",{type:"bar",
+    data:{labels:steps.map(s=>s.l), datasets:[{data:steps.map(s=>[Math.min(s.a,s.b),Math.max(s.a,s.b)]), backgroundColor:steps.map(s=>s.c), borderRadius:3, barPercentage:.72}]},
+    plugins:[barLabels],
+    options:{maintainAspectRatio:false, layout:{padding:{top:22}},
+      plugins:{legend:{display:false}, barLabels:{labels:steps.map((s,i)=>(i>0&&i<steps.length-1&&s.v<0?"− ":s.v>0&&i>0&&i<steps.length-1?"+ ":"")+brlShort(Math.abs(s.v)))},
+        tooltip:{callbacks:{title:it=>steps[it[0].dataIndex].l.join(" "), label:c=>brl(steps[c.dataIndex].v)}}},
+      scales:{y:{beginAtZero:true, ticks:{callback:moneyTick}, grid:gridC}, x:{grid:{display:false}, ticks:{color:PAL.ink, font:{weight:600}, maxRotation:0, autoSkip:false}}}}});
+
+  /* por grupo */
+  const GS = groupsPresent();
+  const allG = base({ignoreGroup:true});
+  const G = GS.map(g=>agg(allG.filter(d=>d.grupo===g)));
+  const dim = (c,i)=> !state.grupo || state.grupo===GS[i] ? c : c+"40";
+  mk("chGrupo",{type:"bar",
+    data:{labels:GS.map(g=>GLABEL[g]), datasets:[
+      {label:"Pendência geral", data:G.map(x=>x.geral), backgroundColor:GS.map((_,i)=>dim(PAL.geral,i)), borderRadius:3},
+      {label:"Já empenhado/reservado", data:G.map(x=>r2(x.covNE+x.covNR+x.deaAut)), backgroundColor:GS.map((_,i)=>dim(PAL.ne,i)), borderRadius:3},
+      {label:"Necessidade orçamentária", data:G.map(x=>x.nec), backgroundColor:GS.map((_,i)=>dim(PAL.gap,i)), borderRadius:3}]},
+    options:{maintainAspectRatio:false,
+      plugins:{legend:{position:"bottom"}, tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${brl(c.raw)}`}}},
+      scales:{y:{ticks:{callback:moneyTick}, grid:gridC}, x:{grid:{display:false}, ticks:{color:PAL.ink,font:{weight:700,size:13}}}}}});
+
+  /* por fonte */
+  const fontes = [...new Set(rows.map(d=>d.fonte))].sort((a,b)=>a.localeCompare(b,"pt-BR"));
+  const F = fontes.map(f=>agg(rows.filter(d=>d.fonte===f)).nec);
+  const fCols = fontes.map((f,i)=> f==="Sem fonte informada" ? "#A7B5C4" : FCOLORS[i%FCOLORS.length]);
+  if (!F.some(v=>v>0)) emptyChart("chFonte","Nenhuma necessidade orçamentária positiva no filtro atual");
+  else mk("chFonte",{type:"doughnut",
+    data:{labels:fontes.map((f,i)=>`${f} · ${brlShort(F[i])}`), datasets:[{data:F.map(v=>Math.max(v,0)), backgroundColor:fCols, borderWidth:2, borderColor:"#fff"}]},
+    options:{maintainAspectRatio:false, cutout:"62%",
+      plugins:{legend:{position:"right", labels:{color:PAL.ink, padding:14}}, tooltip:{callbacks:{label:c=>`${fontes[c.dataIndex]}: ${brl(F[c.dataIndex])} (${(Math.max(F[c.dataIndex],0)/F.reduce((a,v)=>a+Math.max(v,0),0)*100).toLocaleString("pt-BR",{maximumFractionDigits:0})}%)`}}}}});
+
+  /* por credor */
+  const byC = {};
+  rows.forEach(d=>{ (byC[d.base] ||= []).push(d); });
+  let C = Object.entries(byC).map(([k,v])=>{
+    const a = agg(v);
+    return {k, n:v.length, pr:v.some(x=>x.base!==x.credor), g:v[0].grupo, neC:a.covNE, nrC:a.covNR, gp:a.gapPos, ex:a.exc, deaNR:a.deaAut, deaSem:a.deaNaoAut, geral:a.geral, nec:a.nec};
+  }).filter(c=>c.geral>0 || c.ex<0).sort((a,b)=>b.geral-a.geral);
+  const totalC = C.length;
+  if (state.top) C = C.slice(0,15);
+  $("#btnTop").textContent = totalC>15 ? (state.top ? `Mostrar todos os ${totalC} credores` : "Mostrar só os 15 maiores") : `${totalC} credor${totalC!==1?"es":""}`;
+  $("#btnTop").disabled = totalC<=15;
+  $("#credBox").style.height = Math.max(260, C.length*30+100)+"px";
+  if (!C.length) emptyChart("chCred","Nenhum credor com pendência no filtro atual");
+  else mk("chCred",{type:"bar",
+    data:{labels:C.map(c=>shortName(c.k)), datasets:[
+      {label:"Empenho excedente", data:C.map(c=>c.ex), backgroundColor:PAL.exc},
+      {label:"Empenhado (NE)", data:C.map(c=>c.neC), backgroundColor:PAL.ne},
+      {label:"Reservado (NR)", data:C.map(c=>c.nrC), backgroundColor:PAL.nr},
+      {label:"DEA já reservado", data:C.map(c=>c.deaNR), backgroundColor:PAL.dea2},
+      {label:"Sem cobertura", data:C.map(c=>c.gp), backgroundColor:PAL.gap},
+      {label:"DEA sem reserva", data:C.map(c=>c.deaSem), backgroundColor:PAL.dea}]},
+    options:{indexAxis:"y", maintainAspectRatio:false,
+      plugins:{legend:{position:"top", align:"start"},
+        tooltip:{filter:it=>Math.abs(it.raw)>0.004, callbacks:{
+          title:it=>{const c=C[it[0].dataIndex]; return `${c.k} (${GLABEL[c.g]})${c.pr?' · inclui prorrogação':''}`;},
+          label:c=>`${c.dataset.label}: ${brl(c.raw)}`,
+          footer:it=>{const c=C[it[0].dataIndex]; return `Pendência geral: ${brl(c.geral)}\nNecessidade orçamentária: ${brl(c.nec)}`;}}}},
+      scales:{x:{stacked:true, ticks:{callback:moneyTick}, grid:gridC}, y:{stacked:true, grid:{display:false}, ticks:{color:PAL.ink, font:{size:11.5}, autoSkip:false}}}}});
+
+  /* mensal */
+  const mesLabels = [["Atrasados","até set/26"],["OUT/26","competência"],"NOV/26","DEZ/26"];
+  const showG = state.grupo ? [state.grupo] : GS;
+  mk("chMes",{type:"bar",
+    data:{labels:mesLabels, datasets:showG.map(g=>{
+      const s = agg(rows.filter(d=>d.grupo===g));
+      return {label:GLABEL[g], data:[s.atrIn, s.outComp, s.nov, s.dez], backgroundColor:mesLabels.map((_,i)=> i===0 ? GCOLOR[g]+"80" : GCOLOR[g]), borderRadius:2};
+    })},
+    options:{maintainAspectRatio:false,
+      plugins:{legend:{position:"bottom"}, tooltip:{callbacks:{title:it=>[].concat(mesLabels[it[0].dataIndex]).join(" "), label:c=>`${c.dataset.label}: ${brl(c.raw)}`}}},
+      scales:{x:{stacked:true, grid:{display:false}, ticks:{color:PAL.ink}}, y:{stacked:true, ticks:{callback:moneyTick}, grid:gridC}}}});
+
+  /* DEA */
+  const D = Object.entries(byC).map(([k,v])=>({k, a:agg(v), anos:[...new Set(v.map(x=>x.deaAnos).filter(Boolean).flatMap(x=>x.split(/[,;\s]+/)).filter(Boolean))].sort().join(", ")})).filter(x=>x.a.deaNaoPago>0).sort((a,b)=>b.a.deaNaoPago-a.a.deaNaoPago);
+  const hDea = Math.max(320, D.length*42+90)+"px"; $("#deaBox").style.height = hDea; $("#mesBox").style.height = hDea;
+  if (!D.length) emptyChart("chDea","Nenhum DEA pendente no filtro atual");
+  else mk("chDea",{type:"bar",
+    data:{labels:D.map(x=>[shortName(x.k,26), x.anos?`DEA ${x.anos}`:"ano não informado"]), datasets:[
+      {label:"Com NR (autorizado)", data:D.map(x=>x.a.deaAut), backgroundColor:PAL.dea2},
+      {label:"Sem NR (não autorizado)", data:D.map(x=>x.a.deaNaoAut), backgroundColor:PAL.dea}]},
+    options:{indexAxis:"y", maintainAspectRatio:false,
+      plugins:{legend:{position:"bottom"}, tooltip:{filter:it=>Math.abs(it.raw)>0.004, callbacks:{title:it=>`${D[it[0].dataIndex].k}${D[it[0].dataIndex].anos?` · DEA ${D[it[0].dataIndex].anos}`:''}`, label:c=>`${c.dataset.label}: ${brl(c.raw)}`}}},
+      scales:{x:{stacked:true, ticks:{callback:moneyTick, maxRotation:0, maxTicksLimit:5}, grid:gridC}, y:{stacked:true, grid:{display:false}, ticks:{color:PAL.ink, autoSkip:false}}}}});
+
+  renderTable(rows);
+}
+
+/* ===================== ALERTAS (aba inteira) ===================== */
+function renderAlerts(){
+  const all = DATA;
+  const A = [];
+  const nm = arr => [...new Set(arr.map(d=>shortName(d.credor)))].join(", ");
+  const divGap = all.filter(d=>Math.abs(d.semNrNe - r2(d.out+d.nov+d.dez-d.nr-d.ne))>0.05);
+  if (divGap.length) A.push(["crit",`Coluna “sem NR nem NE” divergente em ${divGap.length} linha${divGap.length>1?"s":""}`,
+    `${nm(divGap)}. O painel usa o valor da planilha; passe o mouse no “!” da tabela para ver a diferença.`]);
+  const divNec = all.filter(d=>Math.abs(d.necFim - r2(d.semNrNe + d.deaNaoAut))>0.05);
+  if (divNec.length) A.push(["crit",`Necessidade até o fim do ano divergente em ${divNec.length} linha${divNec.length>1?"s":""}`,
+    divNec.map(d=>`${shortName(d.credor)}: planilha <span class="v">${brl(d.necFim)}</span>, fórmula <span class="v">${brl(r2(d.semNrNe+d.deaNaoAut))}</span>`).join("; ")+
+    `. O painel usa o valor da planilha e mostra a diferença como “Ajuste da planilha”.`]);
+  const naoFecha = all.filter(d=>!outFecha(d));
+  if (naoFecha.length) A.push(["warn",`OUT/26 não fecha com atrasado + competência em ${naoFecha.length} linha${naoFecha.length>1?"s":""}`,
+    naoFecha.map(d=>`${shortName(d.credor)} (OUT ${brlShort(d.out)}, atrasado ${brlShort(d.atras)}, NOV ${brlShort(d.nov)})`).join("; ")+
+    `. Confira se os atrasados estão somados no OUT/26 ou se o valor atrasado está correto.`]);
+  const neg = all.filter(d=>d.semNrNe<-0.05);
+  if (neg.length) A.push(["warn",`Empenho acima do necessário em ${neg.length} linha${neg.length>1?"s":""}`,
+    `${neg.map(d=>`${shortName(d.credor)} (${brlShort(d.semNrNe)})`).join(", ")}. Juntas abatem <span class="v">${brl(-neg.reduce((a,d)=>a+d.semNrNe,0))}</span> da necessidade. Confirme se esse empenho pode ser remanejado; se não, desligue “Compensar excedente”.`]);
+  const pend = all.filter(d=>!/conclu/i.test(d.status));
+  if (pend.length) A.push(["warn",`${pend.length} linha${pend.length>1?"s":""} com preenchimento não concluído`,
+    `${nm(pend)}. Os valores dessas linhas podem mudar.`]);
+  const semFonte = all.filter(d=>d.fonte==="Sem fonte informada");
+  if (semFonte.length) A.push(["warn",`${semFonte.length} linha${semFonte.length>1?"s":""} sem fonte informada`, `${nm(semFonte)}.`]);
+  const outros = all.filter(d=>d.grupo==="Outros");
+  if (outros.length) A.push(["info","Credores sem grupo definido",
+    `${[...new Set(outros.map(d=>esc(d.credor)))].join("; ")}. Eles aparecem como “Outros”; inclua os nomes na regra de Grupo Credor.`]);
+  const deaSemAno = all.filter(d=>d.deaNaoPago>0 && !d.deaAnos);
+  if (deaSemAno.length) A.push(["info","DEA sem ano de origem", `${nm(deaSemAno)}.`]);
+  const anoSemDea = all.filter(d=>d.deaAnos && d.deaNaoPago===0 && d.deaAut===0);
+  if (anoSemDea.length) A.push(["info","Ano de DEA informado sem valor pendente", `${nm(anoSemDea)}. Pode ser DEA já pago; confira se o ano deve continuar preenchido.`]);
+  const mesesOutros = all.filter(d=>/20(0|1)\d|202[0-5]/.test(d.meses));
+  if (mesesOutros.length) A.push(["info","Meses de outros anos na coluna de 2026", `${nm(mesesOutros)}. Verifique se deveriam estar como DEA.`]);
+  if (all.length && all.every(d=>d.nr===0)) A.push(["info","Nenhuma nota de reserva informada","A coluna NR está zerada em todas as linhas. Se houver reservas não lançadas, a necessidade orçamentária está superestimada."]);
+  if (!A.length) A.push(["ok","Nenhuma inconsistência encontrada","As colunas calculadas batem com as fórmulas e não há pendências de preenchimento nesta leitura."]);
+  $("#alerts").innerHTML = A.map(([c,t,p])=>`<div class="alert ${c}"><b>${t}</b><p>${p}</p></div>`).join("");
+}
+
+/* ===================== TABELA ===================== */
+const COLS = [
+  {k:"grupo",l:"Grupo",t:"s"},
+  {k:"credor",l:"Credor",t:"s",cls:"cred"},
+  {k:"contrato",l:"Contrato",t:"s"},
+  {k:"fonte",l:"Fonte",t:"s"},
+  {k:"meses",l:"Meses informados",t:"s",cls:"meses"},
+  {k:"flags",l:"!",t:"n"},
+  {k:"atras",l:"Atrasado até set",t:"m",sep:true},
+  {k:"out",l:"OUT/26",t:"m"},
+  {k:"nov",l:"NOV/26",t:"m"},
+  {k:"dez",l:"DEZ/26",t:"m"},
+  {k:"geral",l:"Geral (c/ DEA)",t:"m",strong:true},
+  {k:"ne",l:"Em NE",t:"m",sep:true},
+  {k:"nr",l:"Em NR",t:"m"},
+  {k:"gapUse",l:"Sem NR/NE",t:"m"},
+  {k:"deaNaoAut",l:"DEA sem NR",t:"m"},
+  {k:"nec",l:"Necessidade",t:"m",strong:true}
+];
+let tableRows = [];
+function renderTable(rows){
+  if (!loaded) return;
+  const q = state.q.trim().toLowerCase();
+  let R = rows.map(d=>{ const fl=rowFlags(d); return {...d, fl, flags:fl.length}; });
+  if (q) R = R.filter(d=>[d.credor,d.contrato,d.meses,d.fonte,d.tipo,GLABEL[d.grupo]].join(" ").toLowerCase().includes(q));
+  if (state.hideZero) R = R.filter(d=>!d.zero);
+  const {sortKey:k, sortDir:s} = state;
+  R.sort((a,b)=> typeof a[k]==="string" ? s*String(a[k]).localeCompare(String(b[k]),"pt-BR") : s*((a[k]||0)-(b[k]||0)));
+  $("#thead").innerHTML = COLS.map(c=>`<th class="${c.t==="s"?"l":""} ${c.sep?"sep":""}" data-k="${c.k}" tabindex="0" ${k===c.k?`aria-sort="${s>0?"ascending":"descending"}"`:""}>${c.l}</th>`).join("");
+  $("#tbody").innerHTML = R.length ? R.map(d=>"<tr>"+COLS.map(c=>{
+    const v = d[c.k];
+    if (c.k==="grupo"){ const [bg,fg]=GTAG[v]||GTAG.Outros; return `<td class="l"><span class="tag" style="background:${bg};color:${fg}">${GLABEL[v]}</span></td>`; }
+    if (c.k==="flags"){ if(!v) return "<td></td>"; const crit=d.fl.some(f=>f.c); return `<td><span class="flag ${crit?"crit":""}" title="${esc(d.fl.map(f=>"• "+f.t).join("\n"))}">${v}</span></td>`; }
+    if (c.t==="s") return `<td class="l ${c.cls||""}">${esc(v)}</td>`;
+    const z = Math.abs(v)<0.005;
+    return `<td class="${c.sep?"sep":""} ${z?"z":""} ${v<0?"neg":""}" ${c.strong?'style="font-weight:700"':""}>${z?"–":brl(v)}</td>`;
+  }).join("")+"</tr>").join("")
+  : `<tr class="empty-row"><td colspan="${COLS.length}">Nenhuma linha para esta busca e filtros. Limpe a busca ou escolha “Todos” no grupo.</td></tr>`;
+  const Tt = agg(R);
+  $("#tfoot").innerHTML = COLS.map((c,i)=>{
+    if (i===0) return `<td class="l" colspan="6">Total · ${R.length} linha${R.length!==1?"s":""}</td>`;
+    if (i<6) return "";
+    return `<td class="${c.sep?"sep":""}">${brl(Tt[c.k])}</td>`;
+  }).join("");
+  $("#tblCount").textContent = `${R.length} de ${rows.length} linhas no filtro atual. Passe o mouse no número em “!” para ver os pontos de atenção.`;
+  $("#thead").querySelectorAll("th").forEach(th=>{
+    const go=()=>{ const key=th.dataset.k; if(state.sortKey===key) state.sortDir*=-1; else {state.sortKey=key; state.sortDir = COLS.find(c=>c.k===key).t==="s"?1:-1;} renderTable(base()); };
+    th.onclick=go; th.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go();}};
+  });
+  tableRows = R;
+}
+
+/* CSV */
+let downloadsNS = null;
+$("#btnCsv").addEventListener("click", async ()=>{
+  const R = tableRows;
+  const head = ["Grupo","Credor","Contrato","Tipo","Fonte","Status","Meses informados","Atrasado até set","OUT/26","NOV/26","DEZ/26","DEA não pago","Pendência geral","Em NE","Em NR","Sem NR/NE","DEA com NR","DEA sem NR","Necessidade orçamentária","Pontos de atenção"];
+  const n = v => r2(v).toFixed(2).replace(".",",");
+  const q = s => `"${String(s??"").replace(/"/g,'""')}"`;
+  const lines = [head.map(q).join(";")].concat(R.map(d=>[GLABEL[d.grupo],d.credor,d.contrato,d.tipo,d.fonte,d.status,d.meses,n(d.atras),n(d.out),n(d.nov),n(d.dez),n(d.deaNaoPago),n(d.geral),n(d.ne),n(d.nr),n(d.gapUse),n(d.deaAut),n(d.deaNaoAut),n(d.nec),d.fl.map(f=>f.t).join(" | ")].map(q).join(";")));
+  const data = "\ufeff"+lines.join("\r\n");
+  const filename = `pendencias_sermac_${GLABEL[state.grupo]||"todos"}_${state.fonte||"todas"}.csv`.replace(/\s+/g,"_");
+  if (downloadsNS){ try{ await downloadsNS.save({filename, data}); }catch(e){ /* recusado */ } return; }
+  if (!window.claude || typeof window.claude.use!=="function"){ const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([data],{type:"text/csv;charset=utf-8"})); a.download=filename; document.body.appendChild(a); a.click(); a.remove(); }
+});
+
+/* ganchos usados pela camada de leitura */
+function refreshOptions(){ buildControls(); }
+function renderUnmapped(){ renderAlerts(); }
+renderLoading();
+
+/* ===================== STATUS ===================== */
+function setStatus(kind,text){ const p=$("#st-pill"); p.className="pill "+kind; $("#st-text").textContent=text; }
+function showAlert(kind,html){ const a=$("#conn"); if(!html){a.hidden=true;return;} a.className="conn "+(kind||""); a.innerHTML=html; a.hidden=false; }
+
+let lastOkAt=null, sheetTitle="Valores pendentes – Executivas SESAU", sheetEditedAt=null;
+function renderFoot(){
+  $("#foot").textContent = `Fonte: “${sheetTitle}”, aba ${EXECUTIVA}${DATA.length?`, ${DATA.length} linhas (contrato × fonte)`:""}, lida pelo Google Drive de quem abre o painel. NR = nota de reserva · NE = nota de empenho · DEA = despesa de exercícios anteriores.`;
+}
+function onSheet(ev){
+  if(ev.type==="error") return onError(ev.error);
+  const res=ev.result||{};
+  let text=null;
+  const p=res.payload;
+  if(p && typeof p==="object" && typeof p.fileContent==="string") text=p.fileContent;
+  else if(typeof p==="string") text=p;
+  else { const t=(res.content||[]).find(b=>b.type==="text"); if(t){ try{ const j=JSON.parse(t.text); text=j.fileContent??t.text; }catch{ text=t.text; } } }
+  if(!text){ setStatus("warn","Resposta inesperada do Google Drive"); showAlert("warn","O Google Drive respondeu, mas sem o conteúdo da planilha. Os dados abaixo são da última leitura válida."); return; }
+
+  applyParsed(parseSheet(text), res.cache?.storedAt || Date.now(), !!res.cache?.revalidating);
+}
+function applyParsed({rows,missing}, at, revalidating){
+  if(!rows.length){
+    setStatus("warn","Aba SERMAC não encontrada");
+    showAlert("warn",`Não encontrei linhas com Executiva = <b>${EXECUTIVA}</b> na planilha. Confira se o cabeçalho (Executiva, Credor…) foi alterado. ${loaded?"Os dados abaixo são da última leitura válida.":""}`);
+    return;
+  }
+  DATA=rows; loaded=true;
+  lastOkAt = at;
+  const cached = revalidating;
+  setStatus(cached?"wait":"ok", cached ? `Mostrando leitura das ${hora(lastOkAt)} · atualizando…` : `Ao vivo · lido às ${hora(lastOkAt)}`);
+  showAlert(missing.length?"warn":"", missing.length ? `Algumas colunas não foram encontradas no cabeçalho e ficaram zeradas: <b>${missing.join(", ")}</b>.` : "");
+  refreshOptions(); renderUnmapped(); renderFoot(); render();
+}
+function onMeta(ev){
+  if(ev.type!=="data") return;
+  const p=ev.result?.payload;
+  if(p && p.modifiedTime){
+    $("#st-meta").textContent = `Planilha editada em ${dataHora(p.modifiedTime)} · leitura automática a cada 5 min`; sheetEditedAt = p.modifiedTime;
+    if(p.title) sheetTitle = p.title; renderFoot();
+  }
+}
+function onError(e){
+  const code=e?.code||"upstream_error";
+  const retract = ["needs_reauth","server_not_connected","blocked_by_policy","approval_required","not_in_manifest","selection_required","not_granted","capability_disabled","capability_removed","consent_required","user_changed"].includes(code);
+  const msgs={
+    needs_reauth:["Reconecte o Google Drive","A conexão com o Google Drive expirou. Reconecte em claude.ai → Configurações → Conectores e recarregue o painel."],
+    server_not_connected:["Google Drive não conectado","Para ver os dados, adicione o conector Google Drive em claude.ai → Configurações → Conectores e recarregue o painel."],
+    selection_required:["Escolha a conta do Google Drive","Você tem mais de uma conexão do Google Drive. Escolha qual usar no aviso do claude.ai e recarregue o painel."],
+    not_in_manifest:["Acesso ao Google Drive não permitido","O acesso ao Google Drive foi recusado para este painel. Recarregue a página e permita o acesso quando for perguntado."],
+    consent_required:["Acesso ao Google Drive não permitido","Permita o acesso ao Google Drive quando o claude.ai perguntar e recarregue o painel."],
+    blocked_by_policy:["Bloqueado pela organização","A política da sua organização não permite esta leitura do Google Drive."],
+    approval_required:["Precisa de aprovação","A organização exige aprovação para esta leitura, o que ainda não é possível dentro do painel."],
+    not_granted:["Leitura ao vivo indisponível","Esta visualização não tem acesso aos conectores. Abra o painel pelo claude.ai."],
+    capability_disabled:["Leitura ao vivo indisponível","Esta visualização não tem acesso aos conectores. Abra o painel pelo claude.ai."],
+    capability_removed:["Leitura ao vivo indisponível","Esta visualização não tem acesso aos conectores. Abra o painel pelo claude.ai."],
+    tool_error:["Google Drive recusou a leitura",`O Google Drive respondeu: “${esc(e?.message||"erro")}”. Confira se a sua conta tem acesso à planilha.`],
+    server_unavailable:["Google Drive fora do ar","O Google Drive não respondeu agora. O painel tenta de novo na próxima leitura automática."],
+    rate_limited:["Muitas leituras seguidas","Aguarde alguns instantes; o painel tenta de novo na próxima leitura automática."],
+  };
+  if(code==="user_changed"){ DATA=[]; loaded=false; render(); return; }
+  const [title,body]=msgs[code]||["Falha ao ler a planilha",`Erro do conector (${esc(code)}): ${esc(e?.message||"")}. O painel tenta de novo na próxima leitura automática.`];
+  if(retract){ DATA=[]; loaded=false; refreshOptions(); renderUnmapped(); render(); }
+  setStatus("err", title);
+  const stale = !retract && loaded && lastOkAt ? ` Os números abaixo são da leitura das ${hora(lastOkAt)}.` : "";
+  showAlert("err",`<b>${title}.</b> ${body}${stale}`);
+}
+
+/* ===================== CONEXÃO AO VIVO ===================== */
+// Modo público: página hospedada fora do claude.ai lendo a aba publicada em CSV.
+const SHEET_GID = "1335435190";
+const GVIZ_BASE = "https://docs.google.com/spreadsheets/d/" + FILE_ID + "/gviz/tq";
+const bust = u => u + (u.includes("?")?"&":"?") + "_=" + Date.now();
+
+async function viaFetch(url){
+  const resp = await fetch(bust(url), {cache:"no-store"});
+  if (!resp.ok) throw new Error("HTTP " + resp.status);
+  const text = await resp.text();
+  if (/^\s*<(!doctype|html)/i.test(text)) throw new Error("a resposta não é CSV (publicação desativada ou sem acesso)");
+  const out = parseCsv(text);
+  if (!out.rows.length) throw new Error("nenhuma linha da SERMAC no CSV");
+  return out;
+}
+function gvizRows(t){
+  const head = (t.cols||[]).map(c=>c.label||"");
+  const rows = (t.rows||[]).map(r=>(r.c||[]).map(c=>{
+    if (!c || c.v==null) return "";
+    if (c.f!=null) return String(c.f);
+    if (typeof c.v==="number") return Number.isInteger(c.v) ? String(c.v) : c.v.toFixed(2);
+    return String(c.v);
+  }));
+  return [head, ...rows];
+}
+function viaJsonp(){
+  return new Promise((resolve,reject)=>{
+    const cb = "__sermac_" + Date.now();
+    const s = document.createElement("script");
+    const done = () => { clearTimeout(timer); try{ delete window[cb]; }catch(e){ window[cb]=undefined; } s.remove(); };
+    const timer = setTimeout(()=>{ done(); reject(new Error("tempo esgotado")); }, 20000);
+    window[cb] = resp => {
+      done();
+      try{
+        if (!resp || resp.status==="error") throw new Error(((resp&&resp.errors)||[]).map(e=>e.detailed_message||e.message).join("; ") || "o Google recusou a consulta");
+        const out = parseBlocks([gvizRows(resp.table)]);
+        if (!out.rows.length) throw new Error("nenhuma linha da SERMAC na consulta");
+        resolve(out);
+      }catch(e){ reject(e); }
+    };
+    s.onerror = () => { done(); reject(new Error("o navegador bloqueou o script do Google")); };
+    s.src = bust(GVIZ_BASE + "?gid=" + SHEET_GID + "&headers=1&tqx=responseHandler:" + cb);
+    document.head.appendChild(s);
+  });
+}
+const STRATEGIES = [
+  ["link publicado (CSV)", () => viaFetch(CSV_URL)],
+  ["consulta CSV do Google", () => viaFetch(GVIZ_BASE + "?tqx=out:csv&gid=" + SHEET_GID)],
+  ["consulta por script do Google", viaJsonp],
+];
+let workingStrategy = null;
+
+function envTip(){
+  if (window.claude) return "Você está vendo o arquivo dentro do claude.ai, e essa pré-visualização não deixa a página acessar o Google. Hospede o arquivo (por exemplo no Netlify Drop) ou use o link do painel publicado no claude.ai.";
+  if (location.protocol === "file:") return "Você abriu o arquivo direto do computador, e alguns navegadores bloqueiam a leitura nesse modo. Hospede o arquivo (por exemplo no Netlify Drop, arrastando o arquivo) e abra pelo link gerado.";
+  return "Confira se a aba SERMAC continua em Arquivo › Compartilhar › Publicar na Web e se a rede da prefeitura não bloqueia docs.google.com.";
+}
+
+function startCsvMode(){
+  const btn=$("#btn-refresh");
+  $("#st-meta").textContent="Planilha publicada na Web · leitura automática a cada 5 minutos";
+  if(!CSV_URL){
+    setStatus("err","Link da planilha não configurado");
+    showAlert("err","<b>Falta o link CSV da aba SERMAC.</b> Na planilha, use Arquivo › Compartilhar › Publicar na Web, escolha a aba SERMAC e o formato CSV, e cole o link na constante CSV_URL deste arquivo.");
+    loaded=false; render(); return;
+  }
+  let busy=false;
+  async function load(manual){
+    if(busy) return; busy=true;
+    if(manual||!loaded) setStatus("wait", loaded?"Atualizando…":"Lendo a planilha…");
+    const order = workingStrategy ? [workingStrategy, ...STRATEGIES.filter(x=>x!==workingStrategy)] : STRATEGIES;
+    const falhas = [];
+    try{
+      for (const st of order){
+        try{
+          const out = await st[1]();
+          workingStrategy = st;
+          applyParsed(out, Date.now(), false);
+          $("#st-meta").textContent = `Planilha publicada na Web · lida por ${st[0]} · leitura automática a cada 5 min`;
+          return;
+        }catch(err){ falhas.push(`${st[0]}: ${err && err.message ? err.message : err}`); console.warn("[SERMAC]", st[0], err); }
+      }
+      setStatus("err","Não foi possível ler a planilha");
+      showAlert("err",
+        `<b>Não foi possível ler a planilha.</b> ${esc(envTip())}` +
+        (loaded&&lastOkAt?` Os números abaixo são da leitura das ${hora(lastOkAt)}.`:"") +
+        ` O painel tenta de novo em 5 minutos.<br><small style="color:var(--muted)">Tentativas: ${falhas.map(esc).join(" · ")}</small>`);
+    } finally { busy=false; }
+  }
+  btn.disabled=false;
+  btn.addEventListener("click",()=>load(true));
+  load(false);
+  setInterval(()=>{ if(document.visibilityState==="visible") load(false); }, REFRESH_MS);
+  document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible" && lastOkAt && Date.now()-lastOkAt>REFRESH_MS) load(false); });
+}
+
+(async()=>{
+  const c = window.claude;
+  if(!c || typeof c.use!=="function"){ startCsvMode(); return; }
+  c.use("downloads").then(d=>{downloadsNS=d; if(!d) $("#btnCsv").hidden=true;}).catch(()=>{$("#btnCsv").hidden=true;});
+  const mcp = await c.use("mcp").catch(()=>null);
+  if(!mcp){ startCsvMode(); return; }
+  const btn=$("#btn-refresh");
+  mcp.watchTool(SERVER,"read_file_content",{fileId:FILE_ID},onSheet,{cache:{staleTime:60000},refetchInterval:REFRESH_MS});
+  mcp.watchTool(SERVER,"get_file_metadata",{fileId:FILE_ID,excludeContentSnippets:true},onMeta,{cache:{staleTime:60000},refetchInterval:REFRESH_MS});
+  btn.disabled=false;
+  btn.addEventListener("click",async()=>{
+    btn.disabled=true; setStatus("wait","Atualizando…");
+    try{ await mcp.invalidate(SERVER); }catch{ /* sem cache: segue */ }
+    setTimeout(()=>{btn.disabled=false;},30000);
+  });
+})();
+</script>
+</body>
+</html>
